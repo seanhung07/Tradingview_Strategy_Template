@@ -1,0 +1,55 @@
+//@version=5
+strategy('Strategy', overlay=false, initial_capital=8000, currency='USD', pyramiding=1, default_qty_type=strategy.cash, default_qty_value=8000, commission_value=0.01)
+
+
+enable_long_strategy = input.bool(true, title='Enable Long Strategy', group='SL/TP For Long Strategy', inline='1')
+long_stoploss_value = input.float(defval=50, title='Stoploss %', minval=0.1, group='SL/TP For Long Strategy', inline='2')
+long_stoploss_percentage = close * (long_stoploss_value / 100) / syminfo.mintick
+long_takeprofit_value = input.float(defval=50, title='Take Profit %', minval=0.1, group='SL/TP For Long Strategy', inline='2')
+long_takeprofit_percentage = close * (long_takeprofit_value / 100) / syminfo.mintick
+
+bars = input.int(title ="bars", defval=5)
+// Enable Short Strategy
+enable_short_strategy = input.bool(true, title='Enable Short Strategy', group='SL/TP For Short Strategy', inline='3')
+short_stoploss_value = input.float(defval=50, title='Stoploss %', minval=0.1, group='SL/TP For Short Strategy', inline='4')
+short_stoploss_percentage = close * (short_stoploss_value / 100) / syminfo.mintick
+short_takeprofit_value = input.float(defval=50, title='Take Profit %', minval=0.1, group='SL/TP For Short Strategy', inline='4')
+short_takeprofit_percentage = close * (short_takeprofit_value / 100) / syminfo.mintick
+// Plot Stoploss & Take Profit Levels
+long_stoploss_price = strategy.position_avg_price * (1 - long_stoploss_value / 100)
+long_takeprofit_price = strategy.position_avg_price * (1 + long_takeprofit_value / 100)
+short_stoploss_price = strategy.position_avg_price * (1 + short_stoploss_value / 100)
+short_takeprofit_price = strategy.position_avg_price * (1 - short_takeprofit_value / 100)
+plot(enable_long_strategy and not enable_short_strategy ? long_stoploss_price : na, color=color.new(#ff0000, 0), style=plot.style_linebr, linewidth=2, title='Long SL Level')
+plot(enable_long_strategy and not enable_short_strategy ? long_takeprofit_price : na, color=color.new(#008000, 0), style=plot.style_linebr, linewidth=2, title='Long TP Level')
+plot(enable_short_strategy and not enable_long_strategy ? short_stoploss_price : na, color=color.new(#ff0000, 0), style=plot.style_linebr, linewidth=2, title='Short SL Level')
+plot(enable_short_strategy and not enable_long_strategy ? short_takeprofit_price : na, color=color.new(#008000, 0), style=plot.style_linebr, linewidth=2, title='Short TP Level')
+
+// Date Range
+start_date = input.int(title='Start Date', defval=1, minval=1, maxval=31, group='Date Range')
+start_month = input.int(title='Start Month', defval=1, minval=1, maxval=12, group='Date Range')
+start_year = input.int(title='Start Year', defval=1804, minval=1800, maxval=3000, group='Date Range')
+end_date = input.int(title='End Date', defval=1, minval=1, maxval=31, group='Date Range')
+end_month = input.int(title='End Month', defval=1, minval=1, maxval=12, group='Date Range')
+end_year = input.int(title='End Year', defval=2077, minval=1800, maxval=3000, group='Date Range')
+in_date_range = time >= timestamp(syminfo.timezone, start_year, start_month, start_date, 0, 0) and time < timestamp(syminfo.timezone, end_year, end_month, end_date, 0, 0)
+
+//buy signal
+
+// buy_signal = 
+
+//sell signal
+
+//sell signal = 
+
+// Long Strategy
+if buy_signal and in_date_range and enable_long_strategy == true
+    strategy.entry('Long', strategy.long, when=buy_signal, alert_message='Open Long Position')
+    strategy.exit('Long  SL/TP', from_entry='Long', loss=long_stoploss_percentage, profit=long_takeprofit_percentage, alert_message='Your Long SL/TP Limit As Been Triggered.')
+    strategy.close('Long', when=sell_signal, alert_message='Close Long Position')
+
+// Short Strategy
+if sell_signal and in_date_range and enable_short_strategy == true
+    strategy.entry('Short', strategy.short, when=sell_signal, alert_message='Open Short Position')
+    strategy.exit('Short SL/TP', from_entry='Short', loss=short_stoploss_percentage, profit=short_takeprofit_percentage, alert_message='Your Short SL/TP Limit As Been Triggered.')
+    strategy.close('Short', when=buy_signal, alert_message='Close Short Position')
