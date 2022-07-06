@@ -8,7 +8,6 @@ long_stoploss_percentage = close * (long_stoploss_value / 100) / syminfo.mintick
 long_takeprofit_value = input.float(defval=50, title='Take Profit %', minval=0.1, group='SL/TP For Long Strategy', inline='2')
 long_takeprofit_percentage = close * (long_takeprofit_value / 100) / syminfo.mintick
 
-bars = input.int(title ="bars", defval=5)
 // Enable Short Strategy
 enable_short_strategy = input.bool(true, title='Enable Short Strategy', group='SL/TP For Short Strategy', inline='3')
 short_stoploss_value = input.float(defval=50, title='Stoploss %', minval=0.1, group='SL/TP For Short Strategy', inline='4')
