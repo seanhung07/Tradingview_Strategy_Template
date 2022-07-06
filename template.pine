@@ -40,7 +40,7 @@ in_date_range = time >= timestamp(syminfo.timezone, start_year, start_month, sta
 
 //sell signal
 
-//sell signal = 
+//sell_signal = 
 
 // Long Strategy
 if buy_signal and in_date_range and enable_long_strategy == true
